@@ -33,9 +33,10 @@ void CombatAimFix::Update(RE::CombatMeleeAimController* thiz){
 	backUp = target->data.location;
 
 	auto&& obj = target->Get3D();
-	auto&& spine = obj->GetObjectByName("NPC Pelvis [Pelv]");
-	
-	target->data.location = spine->world.translate;
+	if (obj) {
+		auto&& spine = obj->GetObjectByName("NPC Pelvis [Pelv]");
+		if (spine) target->data.location = spine->world.translate;
+	}
 
 	_Update(thiz);
 
