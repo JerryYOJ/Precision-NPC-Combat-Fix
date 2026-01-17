@@ -8,10 +8,10 @@ class CombatAimFix : HookTemplate<CombatAimFix> {
 public:
 	static void Install();
 protected:
-	static void Update(RE::CombatMeleeAimController* thiz);
+	//static void Update(RE::CombatMeleeAimController* thiz);
 	static float GetPitch(RE::Actor*);
 private:
 
-	inline static REL::Relocation<decltype(Update)> _Update;
+	//inline static REL::Relocation<decltype(Update)> _Update;
 	inline static REL::Relocation<decltype(GetPitch)> _GetPitch;
 };
