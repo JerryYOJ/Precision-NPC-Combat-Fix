@@ -45,6 +45,17 @@ static RE::NiPoint3 GetClosestPointOnSegment(RE::NiPoint3 point, RE::NiPoint3 p1
 	return p1 + (segment * t);
 }
 
+static RE::NiPoint3 GetLazyAimTarget(RE::NiPoint3 root, RE::NiPoint3 torso, RE::NiPoint3 head, RE::NiPoint3 aimOrigin) {
+	auto closest1 = GetClosestPointOnSegment(aimOrigin, root, torso);
+	auto closest2 = GetClosestPointOnSegment(aimOrigin, torso, head);
+
+	// Return whichever is closer (requires less twist)
+	float dist1 = closest1.GetSquaredDistance(aimOrigin);
+	float dist2 = closest2.GetSquaredDistance(aimOrigin);
+
+	return (dist1 < dist2) ? closest1 : closest2;
+}
+
 static bool IsHumanoid(RE::TESObjectREFR* refr) {
 	static auto&& dobj = RE::BGSDefaultObjectManager::GetSingleton();
 	auto&& keywd = dobj->GetObject<RE::BGSKeyword>(RE::BGSDefaultObjectManager::DefaultObject::kKeywordNPC);
@@ -81,7 +92,28 @@ float CombatAimFix::GetPitch(RE::Actor* thiz)
 			thiz->SetGraphVariableFloat("PitchHalf_AF", SoftCapAsymmetric(CalcPitch(selfpos, GetClosestPointOnSegment(selfpos, root, head->world.translate)), LIMIT_MIN, LIMIT_MAX, SOFTNESS) * 57.29578 * 0.5);
 		}
 		else {
-			thiz->SetGraphVariableFloat("PitchHalf_AF", SoftCapAsymmetric(CalcPitch(selfpos, target.get()->data.location), LIMIT_MIN, LIMIT_MAX, SOFTNESS) * 57.29578 * 0.5);
+			auto&& targetmodel = target.get()->Get3D(); if (!targetmodel) goto ret;
+			auto&& race = target.get()->GetRace(); if (!race) goto ret;
+			auto* bodyPartData = race->bodyPartData; if (!bodyPartData) goto ret;
+			auto* headpart = bodyPartData->parts[RE::BGSBodyPartDefs::LIMB_ENUM::kHead];
+			auto* torsopart = bodyPartData->parts[RE::BGSBodyPartDefs::LIMB_ENUM::kTorso];
+			if (!headpart || !torsopart) {
+				thiz->SetGraphVariableFloat("PitchHalf_AF", SoftCapAsymmetric(CalcPitch(selfpos, target.get()->GetLookingAtLocation()), LIMIT_MIN, LIMIT_MAX, SOFTNESS) * 57.29578 * 0.5); //fallback
+				goto ret;
+			}
+			auto* headbone = targetmodel->GetObjectByName(headpart->targetName);
+			auto* torsobone = targetmodel->GetObjectByName(torsopart->targetName);
+			if (!headbone || !torsobone) {
+				thiz->SetGraphVariableFloat("PitchHalf_AF", SoftCapAsymmetric(CalcPitch(selfpos, target.get()->GetLookingAtLocation()), LIMIT_MIN, LIMIT_MAX, SOFTNESS) * 57.29578 * 0.5); //fallback
+				goto ret;
+			}
+
+			auto&& root = target.get()->data.location;
+			auto&& head = headbone->world.translate;
+			auto&& torso = torsobone->world.translate;
+
+			auto&& pitch = SoftCapAsymmetric(CalcPitch(selfpos, GetLazyAimTarget(root, torso, head, selfpos)), LIMIT_MIN, LIMIT_MAX, SOFTNESS);
+			thiz->SetGraphVariableFloat("PitchHalf_AF", pitch * 57.29578 * 0.5);
 		}
 	}
 ret:
