@@ -78,7 +78,7 @@ float CombatAimFix::GetPitch(RE::Actor* thiz)
 		static REL::Relocation<bool(*)(RE::Actor*, bool)> IsDead{ RELOCATION_ID(36484, 37483) };
 		
 		auto&& cc = thiz->GetActorRuntimeData().combatController; if (!cc) goto ret;
-		auto&& target = cc->targetHandle; if (!target || IsDead(target.get().get(), true)) goto ret;
+		auto&& target = cc->targetHandle; if (!target || !target.get().get() || IsDead(target.get().get(), true)) goto ret;
 		
 		auto&& selfmodel = thiz->Get3D(); if (!selfmodel) goto ret;
 		auto&& selfbone = selfmodel->GetObjectByName("NPC R Clavicle [RClv]"); if (!selfbone) goto ret;
@@ -86,7 +86,7 @@ float CombatAimFix::GetPitch(RE::Actor* thiz)
 
 		if (IsHumanoid(target.get().get())) {
 			auto&& targetmodel = target.get()->Get3D(); if (!targetmodel) goto ret;
-			auto head = targetmodel->GetObjectByName("NPC Head [Head]");
+			auto head = targetmodel->GetObjectByName("NPC Head [Head]"); if (!head) goto ret;
 			auto root = target.get()->data.location;
 
 			thiz->SetGraphVariableFloat("PitchHalf_AF", SoftCapAsymmetric(CalcPitch(selfpos, GetClosestPointOnSegment(selfpos, root, head->world.translate)), LIMIT_MIN, LIMIT_MAX, SOFTNESS) * 57.29578 * 0.5);
