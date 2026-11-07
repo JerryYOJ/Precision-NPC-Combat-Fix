@@ -39,6 +39,28 @@
         "cacheVariables": {
           "CMAKE_BUILD_TYPE": "RelWithDebInfo"
         }
+      },
+      {
+        "name": "linux-clangcl",
+        "displayName": "Linux cross-compile (clang-cl, Skyrim AE)",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/../build/linux-clangcl",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "VCPKG_TARGET_TRIPLET": "x64-windows-clangcl",
+          "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/_deps/CommonLibSSE-NG/examples/linux-cross-compile/custom-triplets",
+          "VCPKG_OVERLAY_PORTS": "${sourceDir}/_deps/CommonLibSSE-NG/examples/linux-cross-compile/custom-ports",
+          "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/_deps/CommonLibSSE-NG/cmake/toolchain-linux-clangcl.cmake",
+          "VCPKG_INSTALL_OPTIONS": "--allow-unsupported",
+          "XWIN_SYSROOT": "$env{XWIN_SYSROOT}",
+          "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL",
+          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+          "ENABLE_SKYRIM_AE": "ON",
+          "ENABLE_SKYRIM_SE": "OFF",
+          "ENABLE_SKYRIM_VR": "OFF",
+          "BUILD_TESTS": "OFF"
+        }
       }
     ]
 }

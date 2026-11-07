@@ -1,0 +1,3 @@
+[submodule ".buildenv/_deps/CommonLibSSE-NG"]
+	path = .buildenv/_deps/CommonLibSSE-NG
+	url = https://github.com/alandtse/CommonLibSSE-NG.git

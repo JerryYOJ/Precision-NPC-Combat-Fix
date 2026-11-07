@@ -1,9 +1,17 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "precision-npc-combat-fix",
+  "version-string": "0.0.1",
   "dependencies": [
-    "commonlibsse-ng",
+    "boost-algorithm",
     "minhook",
     "spdlog",
-    "boost-algorithm"
+    "xbyak",
+    "directxmath",
+    "directxtk",
+    "fmt",
+    "rapidcsv",
+    "nlohmann-json",
+    "simpleini",
+    "toml11"
   ]
 }

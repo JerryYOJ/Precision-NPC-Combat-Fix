@@ -43,3 +43,6 @@
 .vs
 .vscode
 .buildenv/build
+
+/build/
+/vcpkg_installed/
