@@ -1,9 +1,5 @@
 #pragma once
 
-#include "../../RE/CombatAimController.h"
-#include "../../RE/CombatMeleeAimController.h"
-#include "../../RE/CombatBehaviorContextMelee.h"
-
 class CombatAimFix : HookTemplate<CombatAimFix> {
 public:
 	static void Install();
